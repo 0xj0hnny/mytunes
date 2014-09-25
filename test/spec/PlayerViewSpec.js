@@ -39,16 +39,24 @@ describe('PlayerView', function() {
         , songQueue = appView.model.get('songQueue');
       // Set up a queue of three songs
       songQueue.add(firstSong);
+      console.log(songQueue, "firstsong")
       songQueue.add(secondSong);
+      console.log(songQueue, "secsong")
       songQueue.add(thirdSong);
+      console.log(songQueue, "thirdsong")
       // play the first song
       songQueue.playFirst();
+      console.log(appView.playerView.model.attributes.url)
+
       expect(appView.playerView.model).to.equal(firstSong);
       // Simulate the end of the first song
       $(appView.playerView.el).trigger('ended');
+      console.log(appView.playerView.model.attributes.url)
       expect(appView.playerView.model).to.equal(secondSong);
       // Simulate the end of the second song
       $(appView.playerView.el).trigger('ended');
+      console.log(appView.playerView.model.attributes.url)
+
       expect(appView.playerView.model).to.equal(thirdSong);
     });
   });
