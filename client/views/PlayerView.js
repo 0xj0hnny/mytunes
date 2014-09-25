@@ -6,6 +6,9 @@ var PlayerView = Backbone.View.extend({
   el: '<audio controls autoplay />',
 
   initialize: function() {
+// if dequeued, remove element from DOM
+//if ended, remove element from DOM
+//should be getting list of songs from song
   },
 
   setSong: function(song){
