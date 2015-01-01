@@ -1,38 +1,70 @@
 <!DOCTYPE html>
 <html>
-  <body>
+  <body class="summer">
     <!-- Scripts may be placed anywhere on a page. But FYI, they block rendering of elements
      below them until after the scripts load-->
     <script src="bower_components/jquery/jquery.min.js"></script>
     <script src="bower_components/underscore/underscore.js"></script>
     <script src="bower_components/backbone/backbone.js"></script>
+    <script src="bower_components/require/build/require.min.js"></script>
+        <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+
+    <script src="http://connect.soundcloud.com/sdk.js"></script>
+    <script>
+      SC.initialize({
+        client_id: "7cc1cdd50c381a54316cad0ef2df2915"
+      });
+    </script>
 
     <script src="data/data.js"></script>
+    <link rel="stylesheet" type="text/css" href="bower_components/bootstrap/dist/css/bootstrap-theme.css">
+    <link rel="stylesheet" type="text/css" href="bower_components/bootstrap/dist/css/bootstrap.css">
+    <link rel="stylesheet" type="text/css" href="styles/style.css">
+    <script src="models/soundcloud.js"></script>
 
     <script src="models/SongModel.js"></script>
     <script src="collections/Songs.js"></script>
     <script src="collections/SongQueue.js"></script>
     <script src="models/AppModel.js"></script>
 
-    <script src="views/SongQueueEntryView.js"></script>
-    <script src="views/SongQueueView.js"></script>
     <script src="views/PlayerView.js"></script>
     <script src="views/LibraryView.js"></script>
+    <script src="views/SongQueueView.js"></script>
+    <script src="views/SongQueueEntryView.js"></script>
+
     <script src="views/LibraryEntryView.js"></script>
     <script src="views/AppView.js"></script>
 
     <script>
+      var app;
       $(function(){
         // set up model objects
-        var library = new Songs(songData);
-        var app = new AppModel({library: library});
+        var library
+        var apicall = new soundcloudAPI().fetch().success(function(data){
+            console.log(data)
+            var songArray = []
+            for (var i = 0; i < data.length; i++) {
+                var songObj = {
+                    url: data[i].uri,
+                    title: data[i].title,
+                    artist: data[i].user.username,
+                    SCid: data[i].id
+                }
+                songArray.push(songObj)
+            };
+            console.log(songArray)
+            var library = new Songs(songArray)
+            app = new AppModel({library: library});
+            var appView = new AppView({model: app});
+            $('.containerHold').append(appView.render());
 
+        });
         // build a view for the top level of the whole app
-        var appView = new AppView({model: app});
-
         // put the view onto the screen
-        $('body').append(appView.render());
       });
     </script>
+    <div class="wrapper">
+        <div class="containerHold"></div>
+    </div>
   </body>
 </html>

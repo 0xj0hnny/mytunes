@@ -3,23 +3,18 @@ var PlayerView = Backbone.View.extend({
 
   // HTML5 (native) audio tag is being used
   // see: https://developer.mozilla.org/en-US/docs/Web/Guide/HTML/Using_HTML5_audio_and_video
-  el: '<audio controls autoplay />',
+  el: '<audio controls autoplay class="col-sm-12" />',
 
   initialize: function() {
-    // this.render();
-    // this.listenTo(this.model, 'ended', this.render);
-// if dequeued, remove element from DOM
-//if ended, remove element from DOM
-//should be getting list of songs from song
+    // if (app.get('currentSong') !== undefined) {
 
+    // }
   },
-  events:{
-    ended: function(){
-     // debugger;
-      this.model.ended()
+  events: {
+    'ended': function(){
+      app.attributes.songQueue.models[0].dequeue()
     }
   },
-
   setSong: function(song){
     this.model = song;
     this.render();

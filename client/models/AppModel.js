@@ -2,8 +2,22 @@
 var AppModel = Backbone.Model.extend({
 
   initialize: function(params){
-    this.set('currentSong', new SongModel());
-    this.set('songQueue', new SongQueue());
+    if (localStorage.getItem('localQueue') !== null) {
+      console.log("using local storage")
+      this.set('songQueue', new SongQueue($.parseJSON(localStorage.getItem('localQueue'))));
+      if(this.get('songQueue').models.length >0){
+        console.log('Queue in storage has length');
+        this.attributes.songQueue.trigger('hasSongs');
+        this.set('currentSong', this.attributes.songQueue.models[0]);
+        this.attributes.currentSong.trigger("change:currentSong");
+
+      }
+    } else {
+      this.set('songQueue', new SongQueue());
+      console.log("using new model")
+      this.set('currentSong', new SongModel());
+    }
+
 
     /* Note that 'this' is passed as the third argument. That third argument is
     the context. The 'play' handler will always be bound to that context we pass in.
@@ -14,23 +28,29 @@ var AppModel = Backbone.Model.extend({
 
 
     params.library.on('play', function(song){
+      var id = song.attributes.SCid
+      console.log('id: '+id)
+      // if(song !== this.get('currentSong')){
       this.set('currentSong', song);
+      SC.stream("/tracks/"+id, function(sound){
+        console.log("play", sound)
+        sound.play();
+
+      });
+
+    }, this);
+    params.library.on('stop', function(song){
+      var id = song.attributes.SCid
+      console.log('id: '+id)
+      // if(song !== this.get('currentSong')){
+      this.set('currentSong', song);
+      SC.stream("/tracks/"+id, function(sound){
+        console.log("stopped",sound)
+        sound.stop();
+      });
+
     }, this);
 
-   params.library.on('enqueue', function(song){
-      this.get('songQueue').add(song);
-    }, this);
-
-
-   // this.get('songQueue').on('ended', function(song){
-   //    this.set('currentSong', song);
-   //    this.get('songQueue').remove(song);
-   //  }, this);
-
-  //  this.get('songQueue').on('dequeue', function(song){
-  //     this.set('currentSong', song);
-  //     this.get('songQueue').remove(song);
-  //   }, this);
   }
 
 });
